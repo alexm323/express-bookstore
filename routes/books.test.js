@@ -15,11 +15,33 @@ let bookData = {
     "publisher": "Tolkien House",
     "title": "The Fellowship of the Ring",
     "year": 1993
-  }
+}
+let bookData2 = {
+    "isbn": "123",
+    "amazon_url": "https://www.amazon.com/the_hobbit",
+    "author": "JRR Tolkien",
+    "language": "English",
+    "pages": 200,
+    "publisher": "Tolkien House",
+    "title": "There and back again or The Hobbit",
+    "year": 1969
+}
+let bookData3 = {
+    "isbn": "12345",
+    "amazon_url": "https://www.amazon.com/the_hobbit_2",
+    "author": "JRR Tolkien Jr",
+    "language": "American",
+    "pages": 420,
+    "publisher": "Tokin' House",
+    "title": "Here and Here again or The Covid",
+    "year": 2020
+}
+
 
 let testBook;
 // What we want to do before we test is create a variable where we will be storing the data that we get back and that will just make the testing easier. 
 beforeEach(async () => {
+    console.log('We are in the before each')
     await Book.create(bookData)
 })
 
@@ -39,47 +61,57 @@ describe("GET /books", () => {
     })
 })
 
-describe("GET /books/:code", () => {
-    test('Get a single company', async () => {
-        const res = await request(app).get(`/companies/${testCompany.code}`)
-        expect(res.statusCode).toBe(200);
-        expect(res.body.company.name).toEqual('Team Solo Mid')
-    })
-    test('Responds with 404 for invalid id', async () => {
-        const res = await request(app).get(`/companies/0`)
-        expect(res.statusCode).toBe(404);
+describe("post /books", () => {
+    test('Create a single company ', async () => {
+        const res = await request(app).post('/books').send(bookData2);
+        expect(res.statusCode).toBe(201);
+        // console.log(res.body)
+        expect(res.body).toEqual({
+            book: {
+                isbn: '123',
+                amazon_url: 'https://www.amazon.com/the_hobbit',
+                author: 'JRR Tolkien',
+                language: 'English',
+                pages: 200,
+                publisher: 'Tolkien House',
+                title: 'There and back again or The Hobbit',
+                year: 1969
+            }
+        })
     })
 })
-// describe("post /companies", () => {
-//     test('Create a single company ', async () => {
-//         const res = await request(app).post('/companies').send({ code: 'myspace', name: 'Myspace', description: 'Social Media Company' });
-//         expect(res.statusCode).toBe(201);
-//         expect(res.body).toEqual({
-//             company: { code: "myspace", name: 'Myspace', description: 'Social Media Company' }
-//         })
-//     })
-// })
 
-// describe("PUT /companies/:code", () => {
-//     test('Updates a single company ', async () => {
-//         const res = await request(app).put(`/companies/${testCompany.code}`).send({ name: 'Team Solo Mid Snapdragon', description: 'E-sports Royalty' });
-//         expect(res.statusCode).toBe(200);
-//         expect(res.body).toEqual({
-//             company: { code: testCompany.code, name: 'Team Solo Mid Snapdragon', description: 'E-sports Royalty' }
-//         })
-//     })
-//     test('Tries to update an invalid company', async () => {
-//         const res = await request(app).patch(`/companies/0`).send({ name: 'Team Solo Mid Snapdragon', description: 'E-sports Royalty' });
-//         expect(res.statusCode).toBe(404);
+describe("PUT /books/:isbn", () => {
+    test('Updates a single book ', async () => {
+        const res = await request(app).put(`/books/1`).send(bookData3);
+        expect(res.statusCode).toBe(200);
+        console.log(res.body)
+        expect(res.body).toEqual({
+            book: {
+                isbn: '1',
+                amazon_url: 'https://www.amazon.com/the_hobbit_2',
+                author: 'JRR Tolkien Jr',
+                language: 'American',
+                pages: 420,
+                publisher: "Tokin' House",
+                title: 'Here and Here again or The Covid',
+                year: 2020
+            }
+        })
+    })
+    test('Tries to update an invalid book', async () => {
+        const res = await request(app).put(`/companies/0`).send({ name: 'Team Solo Mid Snapdragon', description: 'E-sports Royalty' });
+        expect(res.statusCode).toBe(404);
 
-//     })
+    })
 
-// })
+})
 
-// describe("DELETE /companies/:code", () => {
-//     test('Deletes a single company ', async () => {
-//         const res = await request(app).delete(`/companies/${testCompany.code}`)
-//         expect(res.statusCode).toBe(200);
-//         expect(res.body).toEqual({ status: 'Deleted' })
-//     })
-// })
+describe("DELETE /books/:isbn", () => {
+    test('Deletes a single book ', async () => {
+        const res = await request(app).delete(`/books/1`)
+        expect(res.statusCode).toBe(200);
+        console.log(res.body)
+        expect(res.body).toEqual({ message: 'Book deleted' })
+    })
+})
